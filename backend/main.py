@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.controllers.health_controller import router as health_router
+from backend.middlewares.error_middleware import register_error_handlers
+
 app = FastAPI(title="Creditos API", version="0.1.0")
 
 app.add_middleware(
@@ -11,7 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/api/health")
-async def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+app.include_router(health_router, prefix="/api")
+register_error_handlers(app)

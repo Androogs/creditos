@@ -8,6 +8,11 @@ Proyecto de financiación de créditos con frontend en React + TypeScript + Vite
 backend/
   main.py
   requirements.txt
+  controllers/
+  services/
+  repositories/
+  models/
+  middlewares/
   .venv/
 frontend/
   public/

@@ -29,7 +29,7 @@ Configura el backend desde la raíz del proyecto:
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r backend\requirements.txt
-fastapi dev backend\main.py
+python -m uvicorn backend.main:app --reload
 ```
 
 En otra terminal, instala y ejecuta el frontend desde `frontend`:

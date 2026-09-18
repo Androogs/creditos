@@ -8,12 +8,15 @@ Proyecto de financiación de créditos con frontend en React + TypeScript + Vite
 backend/
   main.py
   requirements.txt
+  database/
+    schema.sql
+    insert.sql
+    session.py
   controllers/
   services/
   repositories/
   models/
   middlewares/
-  .venv/
 frontend/
   public/
   src/
@@ -23,12 +26,31 @@ frontend/
 
 ## Desarrollo local
 
-Configura el backend desde la raíz del proyecto:
+Configura el backend desde la raíz del proyecto. Si aún no existe el entorno virtual:
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r backend\requirements.txt
+```
+
+Configura la conexión a PostgreSQL en la misma terminal:
+
+```powershell
+$env:DATABASE_URL = "postgresql+psycopg://postgres:TU_PASSWORD@localhost:5432/DB"
+```
+
+Aplica las migraciones y carga los datos iniciales:
+
+```powershell
+alembic upgrade head
+```
+
+Después ejecuta `backend/database/insert.sql` una sola vez desde pgAdmin Query Tool.
+
+Inicia el backend:
+
+```powershell
 python -m uvicorn backend.main:app --reload
 ```
 
@@ -76,3 +98,14 @@ Desde la raíz del proyecto, ejecuta las pruebas del backend:
 ```powershell
 python -m pytest backend/tests -q
 ```
+
+## Migraciones de base de datos
+
+Configura la conexión de PostgreSQL antes de ejecutar Alembic:
+
+```powershell
+$env:DATABASE_URL = "postgresql+psycopg://postgres:TU_PASSWORD@localhost:5432/DB"
+\.venv\Scripts\alembic.exe upgrade head
+```
+
+La revisión `0001_baseline` ejecuta `backend/database/schema.sql`. Los datos iniciales se cargan por separado con `backend/database/insert.sql`.

@@ -13,6 +13,7 @@ CREATE TYPE tipo_seguro AS ENUM ('vida_decreciente', 'vida_nivelada', 'todo_ries
 CREATE TYPE estado_poliza AS ENUM ('cotizada', 'emitida', 'vigente', 'vencida', 'cancelada', 'siniestrada');
 CREATE TYPE tipo_criterio AS ENUM ('buro', 'interno', 'aliado');
 CREATE TYPE estado_desembolso AS ENUM ('pendiente', 'confirmado', 'rechazado', 'anulado');
+CREATE TYPE tipo_cuenta AS ENUM ('ahorros');
 
 CREATE TABLE ciudad (
     id_ciudad BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -568,6 +569,46 @@ CREATE TABLE aseguradora (
     activa BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TABLE banco (
+    id_banco BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    codigo_ach VARCHAR(10) UNIQUE,
+    nombre VARCHAR(180) NOT NULL UNIQUE,
+    nit VARCHAR(30) UNIQUE,
+    pais VARCHAR(80) NOT NULL DEFAULT 'Colombia',
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_banco_codigo_ach CHECK (codigo_ach IS NULL OR codigo_ach ~ '^[0-9]{1,10}$')
+);
+
+CREATE TABLE cuenta_bancaria (
+    id_cuenta BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_banco BIGINT NOT NULL REFERENCES banco(id_banco),
+    tipo tipo_cuenta NOT NULL,
+    numero VARCHAR(40) NOT NULL,
+    titular VARCHAR(180) NOT NULL,
+    nit_titular VARCHAR(30),
+    id_aliado BIGINT REFERENCES aliado_financiero(id_aliado) ON DELETE CASCADE,
+    id_concesionario BIGINT REFERENCES concesionario(id_concesionario) ON DELETE CASCADE,
+    id_cliente BIGINT REFERENCES cliente(id_cliente) ON DELETE CASCADE,
+    activa BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT ck_cuenta_un_solo_titular CHECK (
+        (id_aliado IS NOT NULL)::INT
+        + (id_concesionario IS NOT NULL)::INT
+        + (id_cliente IS NOT NULL)::INT = 1
+    ),
+    CONSTRAINT ck_cuenta_cliente_solo_ahorros CHECK (
+        id_cliente IS NULL OR tipo = 'ahorros'
+    ),
+    CONSTRAINT uq_cuenta_banco_numero_tipo UNIQUE (id_banco, numero, tipo)
+);
+
+CREATE INDEX ix_cuenta_aliado ON cuenta_bancaria (id_aliado) WHERE id_aliado IS NOT NULL;
+CREATE INDEX ix_cuenta_concesionario ON cuenta_bancaria (id_concesionario) WHERE id_concesionario IS NOT NULL;
+CREATE INDEX ix_cuenta_cliente ON cuenta_bancaria (id_cliente) WHERE id_cliente IS NOT NULL;
+
 CREATE TABLE seguro_producto (
     id_seguro_producto BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_aseguradora BIGINT NOT NULL REFERENCES aseguradora(id_aseguradora),
@@ -665,9 +706,22 @@ FOR EACH ROW EXECUTE FUNCTION sincronizar_tipo_seguro();
 CREATE TABLE desembolso (
     id_desembolso BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     num_desembolso VARCHAR(30) UNIQUE,
+
+    -- Crédito asociado
     id_credito BIGINT NOT NULL REFERENCES credito_financiacion(id_credito),
+
+    -- Quién envía el dinero (emisor)
+    id_cuenta_emisor BIGINT NOT NULL REFERENCES cuenta_bancaria(id_cuenta),
+    emisor VARCHAR(180) NOT NULL,
+
+    -- Quién recibe el dinero (receptor)
+    id_cuenta_receptor BIGINT NOT NULL REFERENCES cuenta_bancaria(id_cuenta),
     nit_receptor VARCHAR(30),
     receptor VARCHAR(180) NOT NULL,
+
+    referencia_pago VARCHAR(80),
+
+    -- Cuándo
     fecha_desembolso TIMESTAMPTZ,
     fecha_anexo TIMESTAMPTZ,
     capital NUMERIC(18,2) NOT NULL,
@@ -680,8 +734,71 @@ CREATE TABLE desembolso (
     fecha_actualizacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT ck_desembolso_moneda CHECK (moneda ~ '^[A-Z]{3}$'),
     CONSTRAINT ck_desembolso_plazo CHECK (plazo > 0),
-    CONSTRAINT ck_desembolso_montos CHECK (capital >= 0 AND cuota >= 0 AND valor_seguro >= 0)
+    CONSTRAINT ck_desembolso_montos CHECK (capital >= 0 AND cuota >= 0 AND valor_seguro >= 0),
+    CONSTRAINT ck_desembolso_cuentas_distintas CHECK (
+        id_cuenta_emisor <> id_cuenta_receptor
+    )
 );
+
+COMMENT ON COLUMN desembolso.emisor IS
+    'Snapshot al momento del desembolso; la fuente viva es cuenta_bancaria.titular';
+COMMENT ON COLUMN desembolso.receptor IS
+    'Snapshot al momento del desembolso; la fuente viva es cuenta_bancaria.titular';
+COMMENT ON COLUMN desembolso.id_cuenta_emisor IS
+    'Cuenta bancaria del aliado propio que envía el dinero';
+COMMENT ON COLUMN desembolso.id_cuenta_receptor IS
+    'Cuenta de ahorros activa del cliente que recibe el desembolso';
+COMMENT ON COLUMN desembolso.referencia_pago IS
+    'Número de transacción o referencia de la transferencia bancaria';
+
+CREATE INDEX ix_desembolso_credito_estado ON desembolso (id_credito, estado);
+CREATE INDEX ix_desembolso_referencia ON desembolso (referencia_pago) WHERE referencia_pago IS NOT NULL;
+
+CREATE OR REPLACE FUNCTION validar_cuentas_desembolso()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id_cliente BIGINT;
+BEGIN
+    SELECT sc.id_cliente INTO v_id_cliente
+    FROM credito_financiacion cf
+    JOIN solicitud_credito sc ON sc.id_solicitud = cf.id_solicitud
+    WHERE cf.id_credito = NEW.id_credito;
+
+    IF v_id_cliente IS NULL THEN
+        RAISE EXCEPTION 'No se pudo determinar el cliente del crédito %', NEW.id_credito;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM cuenta_bancaria cb
+        JOIN aliado_financiero af ON af.id_aliado = cb.id_aliado
+        WHERE cb.id_cuenta = NEW.id_cuenta_emisor
+            AND cb.activa = TRUE
+            AND af.es_propio = TRUE
+            AND af.activo = TRUE
+    ) THEN
+        RAISE EXCEPTION 'La cuenta emisora debe estar activa y pertenecer a un aliado propio';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM cuenta_bancaria
+        WHERE id_cuenta = NEW.id_cuenta_receptor
+            AND id_cliente = v_id_cliente
+            AND tipo = 'ahorros'
+            AND activa = TRUE
+    ) THEN
+        RAISE EXCEPTION 'La cuenta receptora debe ser una cuenta de ahorros activa del cliente';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_desembolso_cuentas
+BEFORE INSERT OR UPDATE OF id_cuenta_emisor, id_cuenta_receptor, id_credito ON desembolso
+FOR EACH ROW EXECUTE FUNCTION validar_cuentas_desembolso();
 
 CREATE TABLE otp (
     id_otp BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -757,7 +874,9 @@ BEGIN
         datos_nuevos->>'id_poliza', datos_anteriores->>'id_poliza',
         datos_nuevos->>'id_desembolso', datos_anteriores->>'id_desembolso',
         datos_nuevos->>'id_aliado_producto', datos_anteriores->>'id_aliado_producto',
-        datos_nuevos->>'id_aliado', datos_anteriores->>'id_aliado'
+        datos_nuevos->>'id_aliado', datos_anteriores->>'id_aliado',
+        datos_nuevos->>'id_cuenta', datos_anteriores->>'id_cuenta',
+        datos_nuevos->>'id_banco', datos_anteriores->>'id_banco'
     );
 
     FOR campo_actual IN
@@ -820,6 +939,14 @@ CREATE TRIGGER trg_desembolso_actualizacion
 BEFORE UPDATE ON desembolso
 FOR EACH ROW EXECUTE FUNCTION actualizar_fecha_actualizacion();
 
+CREATE TRIGGER trg_cuenta_bancaria_actualizacion
+BEFORE UPDATE ON cuenta_bancaria
+FOR EACH ROW EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trg_banco_actualizacion
+BEFORE UPDATE ON banco
+FOR EACH ROW EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
 CREATE TRIGGER trg_auditoria_solicitud
 AFTER INSERT OR UPDATE OR DELETE ON solicitud_credito
 FOR EACH ROW EXECUTE FUNCTION auditar_cambio_fila();
@@ -838,6 +965,14 @@ FOR EACH ROW EXECUTE FUNCTION auditar_cambio_fila();
 
 CREATE TRIGGER trg_auditoria_desembolso
 AFTER INSERT OR UPDATE OR DELETE ON desembolso
+FOR EACH ROW EXECUTE FUNCTION auditar_cambio_fila();
+
+CREATE TRIGGER trg_auditoria_cuenta_bancaria
+AFTER INSERT OR UPDATE OR DELETE ON cuenta_bancaria
+FOR EACH ROW EXECUTE FUNCTION auditar_cambio_fila();
+
+CREATE TRIGGER trg_auditoria_banco
+AFTER INSERT OR UPDATE OR DELETE ON banco
 FOR EACH ROW EXECUTE FUNCTION auditar_cambio_fila();
 
 CREATE TRIGGER trg_auditoria_aliado_producto
@@ -863,62 +998,6 @@ BEFORE DELETE ON usuario
 FOR EACH ROW
 EXECUTE FUNCTION impedir_eliminacion_usuario();
 
-INSERT INTO rol (nombre, descripcion) VALUES
-    ('cliente', 'Usuario solicitante'),
-    ('asesor', 'Asesor comercial'),
-    ('aliado', 'Usuario de aliado comercial'),
-    ('admin', 'Administrador de la plataforma'),
-    ('contabilidad', 'Usuario de contabilidad')
-ON CONFLICT (nombre) DO NOTHING;
-
-INSERT INTO aliado_financiero (nit, nombre, tipo, sitio_web)
-VALUES ('814005081', 'INVERSIONES PACIFICO S.A.', 'otro', NULL)
-ON CONFLICT (nit) DO NOTHING;
-
-UPDATE aliado_financiero
-SET es_propio = TRUE
-WHERE nit = '814005081';
-
-INSERT INTO concesionario (nombre) VALUES
-    ('TULUA MOTOS SA'),
-    ('SUMOTO SA PALMIRA'),
-    ('PIJAOS MOTOS S.A')
-ON CONFLICT (nombre) DO NOTHING;
-
-INSERT INTO aliado_concesionario (id_aliado, id_concesionario)
-SELECT a.id_aliado, c.id_concesionario
-FROM aliado_financiero a
-CROSS JOIN concesionario c
-WHERE a.nit = '814005081'
-    AND c.nombre IN ('TULUA MOTOS SA', 'SUMOTO SA PALMIRA', 'PIJAOS MOTOS S.A')
-ON CONFLICT (id_aliado, id_concesionario) DO NOTHING;
-
-INSERT INTO aliado_producto (id_aliado, nombre)
-SELECT id_aliado, 'Financiacion de motocicleta'
-FROM aliado_financiero
-WHERE nit = '814005081'
-ON CONFLICT (id_aliado, nombre) DO NOTHING;
-
-INSERT INTO criterio_evaluacion (codigo, descripcion, tipo) VALUES
-    ('EDAD_POLITICA', 'Edad entre 18 y 65 anos', 'interno'),
-    ('NACIONALIDAD_COLOMBIANA', 'Nacionalidad colombiana', 'interno'),
-    ('DOCUMENTO_VIGENTE', 'Documento de identidad vigente', 'buro'),
-    ('EMBARGOS_VIGENTES', 'Embargos vigentes', 'buro'),
-    ('CARTERA_CASTIGADA', 'Cartera castigada vigente en los ultimos 12 meses', 'buro'),
-    ('DUDOSO_RECAUDO', 'Obligaciones de dudoso recaudo', 'buro'),
-    ('MORA_30_VIGENTE', 'Mora vigente de 30 dias o mas', 'buro'),
-    ('MORA_60_VIGENTE', 'Mora vigente de 60 dias o mas', 'buro'),
-    ('MORA_HISTORICA_30', 'Mora historica de 30 dias', 'buro'),
-    ('MORA_HISTORICA_60', 'Mora historica de 60 dias', 'buro'),
-    ('MORA_HISTORICA_90', 'Mora historica de 90 dias o mas', 'buro'),
-    ('CALIFICACION_NO_AB', 'Calificacion diferente de A o B', 'buro'),
-    ('REESTRUCTURACION', 'Obligaciones reestructuradas', 'buro'),
-    ('CANCELACION_NEGATIVA', 'Cancelacion por mal habito', 'buro'),
-    ('SCORE_QUANTUM', 'Score Quantum del cliente', 'interno'),
-    ('VALOR_INGRESO', 'Valor ingreso calculado', 'interno'),
-    ('CAPACIDAD_PAGO', 'Capacidad de pago calculada', 'interno')
-ON CONFLICT (codigo) DO NOTHING;
-
 CREATE INDEX ix_solicitud_cliente ON solicitud_credito (id_cliente);
 CREATE INDEX ix_solicitud_estado ON solicitud_credito (estado);
 CREATE INDEX ix_solicitud_fecha_hora ON solicitud_credito (fecha_hora);
@@ -932,5 +1011,4 @@ CREATE INDEX ix_otp_solicitud_estado ON otp (id_solicitud, estado);
 CREATE INDEX ix_oferta_aliado_fecha ON oferta_credito (id_aliado_producto, fecha_generacion);
 CREATE INDEX ix_seguro_cotizacion_solicitud ON seguro_cotizacion (id_solicitud, fecha_cotizacion);
 CREATE INDEX ix_poliza_credito ON poliza (id_credito) WHERE id_credito IS NOT NULL;
-CREATE INDEX ix_desembolso_credito_estado ON desembolso (id_credito, estado);
 CREATE INDEX ix_auditoria_usuario_fecha ON auditoria_usuario (id_usuario, fecha_hora);

@@ -26,7 +26,10 @@ load_dotenv()
 
 app = FastAPI(
     title="Creditos API",
-    version="0.2.0"
+    version="0.2.0",
+    docs_url="/api-docs",
+    redoc_url="/redoc",
+    openapi_url="/api/openapi.json",
 )
 
 
@@ -38,7 +41,6 @@ cors_origins = [
     ).split(",")
     if origin.strip()
 ]
-
 
 app.add_middleware(
     CORSMiddleware,

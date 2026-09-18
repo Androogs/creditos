@@ -41,7 +41,7 @@ npm install
 npm run dev
 ```
 
-El frontend queda en `http://localhost:5173` y la documentación interactiva de la API en `http://localhost:8000/docs`. Las peticiones a `/api` se redirigen automáticamente al backend durante el desarrollo.
+El frontend queda en `http://localhost:5173` y la documentación interactiva de la API en `http://localhost:8000/api-docs`. Las peticiones a `/api` se redirigen automáticamente al backend durante el desarrollo.
 
 El endpoint inicial es `GET /api/health`.
 
@@ -71,3 +71,9 @@ uvicorn backend.main:app --host 0.0.0.0 --port $PORT
 ```
 
 Configura la variable de entorno `CORS_ORIGINS` con el dominio de Pages, por ejemplo `https://desarrollo-creditos.pages.dev`, y configura el frontend para consumir la URL pública de la API. El endpoint de comprobación será `https://TU-BACKEND/api/health`.
+
+Desde la raíz del proyecto, ejecuta las pruebas del backend:
+
+```powershell
+python -m pytest backend/tests -q
+```

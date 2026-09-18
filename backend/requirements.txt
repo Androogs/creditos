@@ -1,1 +1,5 @@
 fastapi[standard]
+pytest
+SQLAlchemy
+alembic
+psycopg[binary]

@@ -32,3 +32,16 @@ venv/
 *.njsproj
 *.sln
 *.sw?
+
+node_modules/
+.env
+.env.*
+!.env.example
+
+logs/
+*.log
+
+certs/*.key
+certs/*.pem
+
+.DS_Store

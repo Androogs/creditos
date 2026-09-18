@@ -23,14 +23,13 @@ frontend/
 
 ## Desarrollo local
 
-Configura y ejecuta el backend desde `backend`:
+Configura el backend desde la raíz del proyecto:
 
 ```powershell
-cd backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-fastapi dev main.py
+python -m pip install -r backend\requirements.txt
+fastapi dev backend\main.py
 ```
 
 En otra terminal, instala y ejecuta el frontend desde `frontend`:

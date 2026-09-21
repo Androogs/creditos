@@ -1,0 +1,315 @@
+﻿{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Creditos API",
+        "version": "0.2.0"
+    },
+    "paths": {
+        "/api/health": {
+            "get": {
+                "summary": "Health Check",
+                "operationId": "health_check_api_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/datacredito/preselecta/decision": {
+            "post": {
+                "tags": [
+                    "DatacrÃ©dito"
+                ],
+                "summary": "Consultar Preselecta",
+                "operationId": "consultar_preselecta_api_datacredito_preselecta_decision_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PreselectaRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/datacredito/valor-ingreso": {
+            "post": {
+                "tags": [
+                    "DatacrÃ©dito"
+                ],
+                "summary": "Consultar Valor Ingreso",
+                "operationId": "consultar_valor_ingreso_api_datacredito_valor_ingreso_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ValorIngresoRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "InquiryKeyValue": {
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "title": "Key"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "key",
+                    "value"
+                ],
+                "title": "InquiryKeyValue"
+            },
+            "InquiryParameter": {
+                "properties": {
+                    "paramType": {
+                        "type": "string",
+                        "title": "Paramtype"
+                    },
+                    "keyvalue": {
+                        "$ref": "#/components/schemas/InquiryKeyValue"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "paramType",
+                    "keyvalue"
+                ],
+                "title": "InquiryParameter"
+            },
+            "PreselectaRequest": {
+                "properties": {
+                    "idNumber": {
+                        "type": "string",
+                        "title": "Idnumber"
+                    },
+                    "idType": {
+                        "type": "string",
+                        "title": "Idtype"
+                    },
+                    "firstLastName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Firstlastname"
+                    },
+                    "inquiryClientId": {
+                        "type": "string",
+                        "title": "Inquiryclientid"
+                    },
+                    "inquiryClientType": {
+                        "type": "string",
+                        "title": "Inquiryclienttype"
+                    },
+                    "inquiryUserId": {
+                        "type": "string",
+                        "title": "Inquiryuserid"
+                    },
+                    "inquiryUserType": {
+                        "type": "string",
+                        "title": "Inquiryusertype"
+                    },
+                    "inquiryParameters": {
+                        "items": {
+                            "$ref": "#/components/schemas/InquiryParameter"
+                        },
+                        "type": "array",
+                        "title": "Inquiryparameters"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "idNumber",
+                    "idType",
+                    "inquiryClientId",
+                    "inquiryClientType",
+                    "inquiryUserId",
+                    "inquiryUserType",
+                    "inquiryParameters"
+                ],
+                "title": "PreselectaRequest"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    },
+                    "input": {
+                        "title": "Input"
+                    },
+                    "ctx": {
+                        "type": "object",
+                        "title": "Context"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            },
+            "ValorIngresoRequest": {
+                "properties": {
+                    "TipoIdentificacionUsuario": {
+                        "type": "string",
+                        "title": "Tipoidentificacionusuario"
+                    },
+                    "IdentificacionUsuario": {
+                        "type": "string",
+                        "title": "Identificacionusuario"
+                    },
+                    "TipoIDSuscriptor": {
+                        "type": "string",
+                        "title": "Tipoidsuscriptor"
+                    },
+                    "NitSuscriptor": {
+                        "type": "string",
+                        "title": "Nitsuscriptor"
+                    },
+                    "NombreSuscriptor": {
+                        "type": "string",
+                        "title": "Nombresuscriptor"
+                    },
+                    "TipoIdBuscar": {
+                        "type": "string",
+                        "title": "Tipoidbuscar"
+                    },
+                    "IdentificacionBuscar": {
+                        "type": "string",
+                        "title": "Identificacionbuscar"
+                    },
+                    "IngresoValidar": {
+                        "type": "string",
+                        "title": "Ingresovalidar"
+                    },
+                    "ProductoId": {
+                        "type": "string",
+                        "title": "Productoid"
+                    },
+                    "CanalConsulta": {
+                        "type": "string",
+                        "title": "Canalconsulta"
+                    },
+                    "ProductoConsulta": {
+                        "type": "string",
+                        "title": "Productoconsulta"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "TipoIdentificacionUsuario",
+                    "IdentificacionUsuario",
+                    "TipoIDSuscriptor",
+                    "NitSuscriptor",
+                    "NombreSuscriptor",
+                    "TipoIdBuscar",
+                    "IdentificacionBuscar",
+                    "IngresoValidar",
+                    "ProductoId",
+                    "CanalConsulta",
+                    "ProductoConsulta"
+                ],
+                "title": "ValorIngresoRequest"
+            }
+        }
+    }
+}

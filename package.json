@@ -1,0 +1,12 @@
+{
+  "name": "desarrollo-creditos",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm --prefix frontend run lint",
+    "format": "npm --prefix frontend run format"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

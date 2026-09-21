@@ -1,21 +1,29 @@
-# Logs
-logs
+# Logs and runtime output
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.eslintcache
 
-node_modules
-Informes Pacifico/
-dist
-dist-ssr
+# Dependencies and build output
+node_modules/
+dist/
+dist-ssr/
 *.local
+*.tsbuildinfo
+
+# Cloudflare Wrangler
+.wrangler/
+
+# Environment files
 .env
 .env.*
 !.env.example
 
+<<<<<<< HEAD
 # IDE
 .vscode/
 .idea/
@@ -25,10 +33,29 @@ dist-ssr
 Thumbs.db
 
 # Python
+=======
+# Project-specific
+Informes Pacifico/
+
+# Python environments and caches
+>>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+**/.venv/
+**/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Type checkers and linters
+.ruff_cache/
 
 # Environment
 .env
@@ -36,14 +63,17 @@ venv/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.history/
 
+<<<<<<< HEAD
 # Frontend
 frontend/dist
 
@@ -57,8 +87,20 @@ node_modules/
 
 logs/
 *.log
+=======
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+>>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838
 
+# Local certificates and secrets
 certs/*.key
 certs/*.pem
+certs/*.crt
 
-.DS_Store
+# Temporary and patch files
+*.bak
+*.tmp
+*.orig
+*.rej

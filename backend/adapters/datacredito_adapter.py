@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from backend.services.preselecta_service import (
     PreselectaService,
 )
@@ -34,3 +35,27 @@ class DatacreditoAdapter:
 
 
 datacredito_adapter = DatacreditoAdapter()
+=======
+from typing import Any
+
+
+class DatacreditoAdapter:
+	async def consultar_preselecta(
+		self,
+		payload: dict[str, Any]
+	) -> dict[str, Any]:
+		raise NotImplementedError(
+			"La integración Python de Preselecta aún no está configurada"
+		)
+
+	async def consultar_valor_ingreso(
+		self,
+		params: dict[str, Any]
+	) -> dict[str, Any]:
+		raise NotImplementedError(
+			"La integración Python de Valor Ingreso aún no está configurada"
+		)
+
+
+datacredito_adapter = DatacreditoAdapter()
+>>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838

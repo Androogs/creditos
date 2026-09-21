@@ -23,7 +23,6 @@ dist-ssr/
 .env.*
 !.env.example
 
-<<<<<<< HEAD
 # IDE
 .vscode/
 .idea/
@@ -32,13 +31,10 @@ dist-ssr/
 .DS_Store
 Thumbs.db
 
-# Python
-=======
 # Project-specific
 Informes Pacifico/
 
 # Python environments and caches
->>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838
 __pycache__/
 *.py[cod]
 .venv/
@@ -73,26 +69,13 @@ coverage.xml
 *.sw?
 .history/
 
-<<<<<<< HEAD
 # Frontend
 frontend/dist
 
-# Testing
-.pytest_cache
-
-node_modules/
-.env
-.env.*
-!.env.example
-
-logs/
-*.log
-=======
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
->>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838
 
 # Local certificates and secrets
 certs/*.key

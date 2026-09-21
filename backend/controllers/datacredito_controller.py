@@ -1,25 +1,14 @@
 from fastapi import APIRouter
 
-<<<<<<< HEAD
 from backend.adapters.datacredito_adapter import datacredito_adapter
 from backend.models.datacredito_models import (
     PreselectaRequest,
     ValorIngresoRequest,
-=======
-from backend.adapters.datacredito_adapter import (
-    datacredito_adapter
-)
-
-from backend.models.datacredito_models import (
-    PreselectaRequest,
-    ValorIngresoRequest
->>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838
 )
 
 
 router = APIRouter(
     prefix="/datacredito",
-<<<<<<< HEAD
     tags=["Datacrédito"],
 )
 
@@ -36,43 +25,3 @@ async def consultar_valor_ingreso(request: ValorIngresoRequest):
     params = request.model_dump()
 
     return await datacredito_adapter.consultar_valor_ingreso(params)
-=======
-    tags=["Datacrédito"]
-)
-
-
-@router.post(
-    "/preselecta/decision"
-)
-async def consultar_preselecta(
-    request: PreselectaRequest
-):
-
-    payload = request.model_dump(
-        exclude_none=True
-    )
-
-    return await (
-        datacredito_adapter
-        .consultar_preselecta(
-            payload
-        )
-    )
-
-
-@router.post(
-    "/valor-ingreso"
-)
-async def consultar_valor_ingreso(
-    request: ValorIngresoRequest
-):
-
-    params = request.model_dump()
-
-    return await (
-        datacredito_adapter
-        .consultar_valor_ingreso(
-            params
-        )
-    )
->>>>>>> 6c057cfb599491e2d6d35b8d8a9c99e955203838

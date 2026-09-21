@@ -1,6 +1,4 @@
-from typing import Any
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class InquiryKeyValue(BaseModel):
@@ -32,13 +30,12 @@ class ValorIngresoRequest(BaseModel):
     IdentificacionUsuario: str
 
     TipoIDSuscriptor: str
-    NitSuscriptor: str
     NombreSuscriptor: str
 
     TipoIdBuscar: str
     IdentificacionBuscar: str
 
     IngresoValidar: str
-    ProductoId: str
-    CanalConsulta: str
-    ProductoConsulta: str
+    ProductoID: str
+    CanalConsultas: str
+    ProductoConsultas: str

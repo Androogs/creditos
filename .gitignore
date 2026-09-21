@@ -16,11 +16,22 @@ dist-ssr
 .env.*
 !.env.example
 
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
 # Python
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Environment
+.env
 
 # Editor directories and files
 .vscode/*
@@ -32,6 +43,12 @@ venv/
 *.njsproj
 *.sln
 *.sw?
+
+# Frontend
+frontend/dist
+
+# Testing
+.pytest_cache
 
 node_modules/
 .env

@@ -3,3 +3,5 @@ pytest
 SQLAlchemy
 alembic
 psycopg[binary]
+python-dotenv
+pydantic-settings

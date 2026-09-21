@@ -1,12 +1,13 @@
 from logging.config import fileConfig
-import os
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from backend.config import get_settings
+
 
 config = context.config
-database_url = os.getenv("DATABASE_URL")
+database_url = get_settings().database_url
 
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))

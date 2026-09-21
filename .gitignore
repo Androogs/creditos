@@ -6,15 +6,25 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.eslintcache
 
+# Dependencies and build output
 node_modules/
-Informes Pacifico/
 dist/
 dist-ssr/
 *.local
+*.tsbuildinfo
+
+# Cloudflare Wrangler
+.wrangler/
+
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Project-specific
+Informes Pacifico/
 
 # Python environments and caches
 __pycache__/
@@ -27,19 +37,39 @@ venv/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Type checkers and linters
+.ruff_cache/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.history/
 
-# Local certificates and OS files
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local certificates and secrets
 certs/*.key
 certs/*.pem
-.DS_Store
+certs/*.crt
+
+# Temporary and patch files
+*.bak
+*.tmp
+*.orig
+*.rej

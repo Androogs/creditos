@@ -1,13 +1,10 @@
-import os
-
-from dotenv import load_dotenv
-
 from fastapi import FastAPI
 
 from fastapi.middleware.cors import (
     CORSMiddleware
 )
 
+from backend.config import get_settings
 from backend.controllers.health_controller import (
     router as health_router
 )
@@ -21,26 +18,19 @@ from backend.middlewares.error_middleware import (
 )
 
 
-load_dotenv()
+settings = get_settings()
 
 
 app = FastAPI(
-    title="Creditos API",
-    version="0.2.0",
+    title=settings.app_title,
+    version=settings.app_version,
     docs_url="/api-docs",
     redoc_url="/redoc",
     openapi_url="/api/openapi.json",
 )
 
 
-cors_origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:5173"
-    ).split(",")
-    if origin.strip()
-]
+cors_origins = settings.cors_origin_list()
 
 app.add_middleware(
     CORSMiddleware,

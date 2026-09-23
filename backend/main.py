@@ -7,8 +7,8 @@ from backend.config import get_settings
 from backend.controllers.health_controller import (
     router as health_router,
 )
-from backend.controllers.datacredito_controller import (
-    router as datacredito_router,
+from backend.controllers.motor_controller import (
+    router as motor_router,
 )
 from backend.middlewares.error_middleware import (
     register_error_handlers,
@@ -40,7 +40,7 @@ app.include_router(
 )
 
 app.include_router(
-    datacredito_router,
+    motor_router,
     prefix="/api",
 )
 

@@ -23,6 +23,7 @@ dist-ssr/
 .env.*
 !.env.example
 
+<<<<<<< HEAD
 # IDE
 .vscode/
 .idea/
@@ -31,6 +32,8 @@ dist-ssr/
 .DS_Store
 Thumbs.db
 
+=======
+>>>>>>> fb57f4a (Actualiozación sobre el motor propio sin uso de preselecta)
 # Project-specific
 Informes Pacifico/
 
@@ -50,12 +53,6 @@ venv/
 htmlcov/
 coverage.xml
 
-# Type checkers and linters
-.ruff_cache/
-
-# Environment
-.env
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -69,9 +66,12 @@ coverage.xml
 *.sw?
 .history/
 
+<<<<<<< HEAD
 # Frontend
 frontend/dist
 
+=======
+>>>>>>> fb57f4a (Actualiozación sobre el motor propio sin uso de preselecta)
 # OS files
 .DS_Store
 Thumbs.db

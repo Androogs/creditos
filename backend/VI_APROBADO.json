@@ -1,0 +1,156 @@
+{
+  "fecha": "09\/14\/2026 03:23:52 PM",
+  "consulta_id": "20260914152352389",
+  "respuesta_id": 4,
+  "tipo_identificacion_persona_natural_id": 1,
+  "numero_identificacion_persona_natural": "1025060440",
+  "primer_nombre_persona_natural": "CARMEN",
+  "segundo_nombre_persona_natural": "MELISA",
+  "primer_apellido_persona_natural": "GOMEZ",
+  "segundo_apellido_persona_natural": "MADRONERO",
+  "EPS": "NUEVA EPS",
+  "AFP": "COLPENSIONES",
+  "aportantes": [
+    {
+      "tipo_identificacion_aportante_id": 2,
+      "numero_identificacion_aportante": "890904713",
+      "razon_social_aportante": "COORDINADORA MERCANTIL SA",
+      "tipo_cotizante_persona_natural": 1,
+      "descripcion_cotizante_persona_natural": "Empleado",
+      "tiene_salario_integral_actualmente": false,
+      "tiene_salario_fijo_actualmente": true,
+      "tiene_salario_variable_actualmente": false,
+      "tiene_novedad_ingreso_actualmente_empleador": false,
+      "tiene_novedad_retiro_actualmente_empleado": false,
+      "tiene_licencia_no_remunerada_actualmente_empleador": false,
+      "ingreso_maximo_empleador": 2702080,
+      "ingreso_minimo_empleador": 1399064,
+      "promedio_ingresos": 2359810,
+      "media_ingresos": 2502212,
+      "tipo_planilla": "E",
+      "description_tipo_planilla": "Empleados",
+      "actividad_aportante": "4923",
+      "descripcion_actividad_aportante": "Transporte de carga por carretera",
+      "nivel_impacto_aportante": "Bajo",
+      "benef_upc": false,
+      "ded_obl_ley": 0,
+      "filler1": "",
+      "filler2": "",
+      "filler3": "",
+      "filler4": "",
+      "filler5": "",
+      "filler6": "",
+      "filler7": "",
+      "filler8": "",
+      "filler9": "",
+      "filler10": "",
+      "resultado_pagos": [
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 9,
+          "realizo_pago": true,
+          "ingresos": 2510818
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 8,
+          "realizo_pago": true,
+          "ingresos": 2609958
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 7,
+          "realizo_pago": true,
+          "ingresos": 2688299
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 6,
+          "realizo_pago": true,
+          "ingresos": 1399064
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 5,
+          "realizo_pago": false,
+          "ingresos": 0
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 4,
+          "realizo_pago": false,
+          "ingresos": 0
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 3,
+          "realizo_pago": false,
+          "ingresos": 0
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 2,
+          "realizo_pago": true,
+          "ingresos": 2502212
+        },
+        {
+          "ano_periodo_validado": 2026,
+          "mes_periodo_validado": 1,
+          "realizo_pago": true,
+          "ingresos": 2702080
+        },
+        {
+          "ano_periodo_validado": 2025,
+          "mes_periodo_validado": 12,
+          "realizo_pago": true,
+          "ingresos": 2270214
+        },
+        {
+          "ano_periodo_validado": 2025,
+          "mes_periodo_validado": 11,
+          "realizo_pago": true,
+          "ingresos": 2260362
+        },
+        {
+          "ano_periodo_validado": 2025,
+          "mes_periodo_validado": 10,
+          "realizo_pago": true,
+          "ingresos": 2295284
+        }
+      ]
+    }
+  ],
+  "indicadores": {
+    "tiempo_sin_pago": 3,
+    "tiempo_total_laborado": 9,
+    "ingreso_total_ult_mes": 2510818,
+    "promedio_ult_tres_meses": 2603025,
+    "promedio_ult_doce_meses": 1769857
+  },
+  "resumen_general_ingresos": {
+    "promedio_ingresos_cotizante": 2359810,
+    "mediana_ingresos_cotizante": 2502212,
+    "desviacion_estandar": 376507,
+    "ingreso_minimo_cotizante": 1399064,
+    "ingreso_maximo_cotizante": 2702080,
+    "pendiente_ingresos": 19594,
+    "tendencia_ingresos": "Creciente",
+    "meses_continuidad": 5,
+    "cantidad_fuentes_ingreso": 1,
+    "percentil_general": null,
+    "mediana_ingreso_cuatro_meses": 2609958,
+    "moda_ingresos_ultimos_tres_meses": "",
+    "moda_ingresos_ultimos_seis_meses": "",
+    "moda_ingresos_ultimos_doce_meses": "",
+    "ultimo_periodo_cotizado": "09-2026",
+    "promedio_ultimos_tres_meses_sin_dic_jun": 2603025,
+    "promedio_ultimos_seis_meses_sin_dic_jun": 2603025,
+    "consecutivos_seis_meses": 4
+  },
+  "arl": {
+    "cod_arl": "14-11",
+    "arl": "ARL SURA"
+  },
+  "tipo_planilla": {
+  }
+}

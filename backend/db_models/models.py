@@ -107,6 +107,10 @@ class DatosLaborales(Base):
     ingreso_mensual: Mapped[float | None] = mapped_column(Numeric(18, 2))
     otros_ingresos: Mapped[float] = mapped_column(Numeric(18, 2), default=0)
 
+    # Agregado al implementar el motor propio: solo aplica para
+    # Independientes (perfil de ingreso, ver reglas_perfil.py).
+    anios_camara_comercio: Mapped[float | None] = mapped_column(Numeric(6, 2))
+
     solicitud: Mapped["SolicitudCredito"] = relationship(
         back_populates="datos_laborales"
     )
@@ -218,6 +222,17 @@ class EvaluacionCredito(Base):
         Integer, default=0
     )
     documento_vigente: Mapped[bool | None] = mapped_column(Boolean)
+
+    # Agregados al implementar el motor propio (BRD-IMPL-111350):
+    # letra de calificación real (A, B, C, D, E, AA, BB, CC, K),
+    # necesaria para el filtro duro CAUSAL_R10; quanto3_medio, usado
+    # en la cadena de respaldo de ingreso final; reportado_fallecido
+    # para CAUSAL_R1; y el código de exclusión del score (0/4/99/
+    # 70-77) que cambia la lógica de decisión.
+    calificacion: Mapped[str | None] = mapped_column(String(5))
+    quanto3_medio: Mapped[float | None] = mapped_column(Numeric(18, 2))
+    reportado_fallecido: Mapped[bool] = mapped_column(Boolean, default=False)
+    score_codigo_exclusion: Mapped[str | None] = mapped_column(String(5))
 
     solicitud: Mapped["SolicitudCredito"] = relationship(
         back_populates="evaluaciones"

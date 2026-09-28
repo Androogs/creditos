@@ -1,7 +1,5 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import (
-    CORSMiddleware
-)
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_settings
 from backend.controllers.health_controller import (
@@ -14,7 +12,9 @@ from backend.middlewares.error_middleware import (
     register_error_handlers,
 )
 
+
 settings = get_settings()
+
 
 app = FastAPI(
     title=settings.app_title,
@@ -23,6 +23,7 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/api/openapi.json",
 )
+
 
 cors_origins = settings.cors_origin_list()
 
@@ -34,14 +35,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.include_router(
     health_router,
     prefix="/api",
 )
 
+
 app.include_router(
     motor_router,
     prefix="/api",
 )
+
 
 register_error_handlers(app)

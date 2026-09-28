@@ -1,7 +1,7 @@
 from backend.config import Settings
 
 
-def test_cors_origins_are_parsed_from_csv() -> None:
+def test_corsa_origins_are_parsed_from_csv() -> None:
     settings = Settings(
         cors_origins="http://localhost:5173, https://example.pages.dev"
     )
